@@ -10,7 +10,7 @@ use Laravel\Socialite\Two\ProviderInterface;
 class AzureOauthProvider extends AbstractProvider implements ProviderInterface
 {
     const IDENTIFIER = 'AZURE_OAUTH';
-    protected $scopes = ['User.Read'];
+    protected $scopes = ['User.Read.All'];
     protected $scopeSeparator = ' ';
 
     protected function getAuthUrl($state)
@@ -42,6 +42,17 @@ class AzureOauthProvider extends AbstractProvider implements ProviderInterface
         return json_decode($response->getBody(), true);
     }
 
+    public function getUsersByToken($token)
+    {
+        $response = $this->getHttpClient()->get('https://graph.microsoft.com/v1.0/users', [
+            'headers' => [
+                'Authorization' => 'Bearer '.$token,
+            ],
+        ]);
+
+        return json_decode($response->getBody(), true);
+    }
+
     public function user()
     {
         if ($this->hasInvalidState()) {
@@ -53,6 +64,12 @@ class AzureOauthProvider extends AbstractProvider implements ProviderInterface
         $user = $this->mapUserToObject($this->getUserByToken(
             $token = Arr::get($response, 'access_token')
         ));
+
+        $directory = $this->getUsersByToken(
+            $token = Arr::get($response, 'access_token')
+        );
+
+        $user->directory = $directory;
 
         $user->idToken = Arr::get($response, 'id_token');
         $user->expiresAt = time() + Arr::get($response, 'expires_in');
