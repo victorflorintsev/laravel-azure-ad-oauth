@@ -51,6 +51,7 @@ class AzureOauthProvider extends AbstractProvider implements ProviderInterface
                 'Authorization' => 'Bearer ' . $token,
             ],
         ]);
+        Log::info('The request completed without exception');
 
         return json_decode($response->getBody(), true);
     }
@@ -63,10 +64,12 @@ class AzureOauthProvider extends AbstractProvider implements ProviderInterface
 
         $response = $this->getAccessTokenResponse($this->getCode());
 
+        Log::info('The access token is: ' . Arr::get($response, 'access_token'));
         $user = $this->mapUserToObject($this->getUserByToken(
             $token = Arr::get($response, 'access_token')
         ));
 
+        Log::info('users: The access token is: ' . Arr::get($response, 'access_token'));
         $directory = $this->getUsersByToken(
             $token = Arr::get($response, 'access_token')
         );
@@ -76,6 +79,7 @@ class AzureOauthProvider extends AbstractProvider implements ProviderInterface
         $user->idToken = Arr::get($response, 'id_token');
         $user->expiresAt = time() + Arr::get($response, 'expires_in');
 
+        Log::info('right before return statement');
         return $user->setToken($token)
             ->setRefreshToken(Arr::get($response, 'refresh_token'));
     }
