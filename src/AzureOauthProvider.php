@@ -10,7 +10,7 @@ use Laravel\Socialite\Two\ProviderInterface;
 class AzureOauthProvider extends AbstractProvider implements ProviderInterface
 {
     const IDENTIFIER = 'AZURE_OAUTH';
-    protected $scopes = ['User.Read.All'];
+    protected $scopes = ['User.Read'];
     protected $scopeSeparator = ' ';
 
     protected function getAuthUrl($state)
