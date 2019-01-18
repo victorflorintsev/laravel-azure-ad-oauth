@@ -35,7 +35,7 @@ class AzureOauthProvider extends AbstractProvider implements ProviderInterface
     {
         $response = $this->getHttpClient()->get('https://graph.microsoft.com/v1.0/me/', [
             'headers' => [
-                'Authorization' => 'Bearer '.$token,
+                'Authorization' => 'Bearer ' . $token,
             ],
         ]);
 
@@ -44,11 +44,16 @@ class AzureOauthProvider extends AbstractProvider implements ProviderInterface
 
     public function getUsersByToken($token)
     {
-        $response = $this->getHttpClient()->get('https://graph.microsoft.com/v1.0/users', [
-            'headers' => [
-                'Authorization' => 'Bearer '.$token,
-            ],
-        ]);
+        try {
+            $response = $this->getHttpClient()->get('https://graph.microsoft.com/v1.0/users', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token,
+                ],
+            ]);
+        } catch (exception $e) {
+            $e->messsage = "hiya";
+            throw $e;
+        }
 
         return json_decode($response->getBody(), true);
     }
@@ -75,25 +80,25 @@ class AzureOauthProvider extends AbstractProvider implements ProviderInterface
         $user->expiresAt = time() + Arr::get($response, 'expires_in');
 
         return $user->setToken($token)
-                    ->setRefreshToken(Arr::get($response, 'refresh_token'));
+            ->setRefreshToken(Arr::get($response, 'refresh_token'));
     }
 
     protected function mapUserToObject(array $user)
     {
         return (new User())->setRaw($user)->map([
-            'id'                => $user['id'],
-            'name'              => $user['displayName'],
-            'email'             => $user['mail'],
+            'id' => $user['id'],
+            'name' => $user['displayName'],
+            'email' => $user['mail'],
 
-            'businessPhones'    => $user['businessPhones'],
-            'displayName'       => $user['displayName'],
-            'givenName'         => $user['givenName'],
-            'jobTitle'          => $user['jobTitle'],
-            'mail'              => $user['mail'],
-            'mobilePhone'       => $user['mobilePhone'],
-            'officeLocation'    => $user['officeLocation'],
+            'businessPhones' => $user['businessPhones'],
+            'displayName' => $user['displayName'],
+            'givenName' => $user['givenName'],
+            'jobTitle' => $user['jobTitle'],
+            'mail' => $user['mail'],
+            'mobilePhone' => $user['mobilePhone'],
+            'officeLocation' => $user['officeLocation'],
             'preferredLanguage' => $user['preferredLanguage'],
-            'surname'           => $user['surname'],
+            'surname' => $user['surname'],
             'userPrincipalName' => $user['userPrincipalName'],
         ]);
     }
