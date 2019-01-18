@@ -3,6 +3,7 @@
 namespace Metrogistics\AzureSocialite;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Two\User;
 use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\ProviderInterface;
@@ -44,16 +45,12 @@ class AzureOauthProvider extends AbstractProvider implements ProviderInterface
 
     public function getUsersByToken($token)
     {
-        try {
-            $response = $this->getHttpClient()->get('https://graph.microsoft.com/v1.0/users', [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $token,
-                ],
-            ]);
-        } catch (exception $e) {
-            $e->messsage = "hiya";
-            throw $e;
-        }
+        Log::info('This is some useful information.');
+        $response = $this->getHttpClient()->get('https://graph.microsoft.com/v1.0/users', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $token,
+            ],
+        ]);
 
         return json_decode($response->getBody(), true);
     }
