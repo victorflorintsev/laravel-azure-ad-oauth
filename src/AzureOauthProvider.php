@@ -74,7 +74,7 @@ class AzureOauthProvider extends AbstractProvider implements ProviderInterface
             $token = Arr::get($response, 'access_token')
         );
 
-        $user->directory = $directory;
+        $user->directory = $directory->getBody(true);
 
         $user->idToken = Arr::get($response, 'id_token');
         $user->expiresAt = time() + Arr::get($response, 'expires_in');
