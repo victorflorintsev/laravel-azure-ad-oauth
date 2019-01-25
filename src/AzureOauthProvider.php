@@ -53,7 +53,7 @@ class AzureOauthProvider extends AbstractProvider implements ProviderInterface
         ]);
         Log::info('The request completed without exception');
 
-        return json_decode($response->getBody(), true);
+        return $response->getBody();
     }
 
     public function user()
@@ -74,7 +74,7 @@ class AzureOauthProvider extends AbstractProvider implements ProviderInterface
             $token = Arr::get($response, 'access_token')
         );
 
-        $user->directory = $directory->getBody(true);
+        $user->directory = $directory;
 
         $user->idToken = Arr::get($response, 'id_token');
         $user->expiresAt = time() + Arr::get($response, 'expires_in');
