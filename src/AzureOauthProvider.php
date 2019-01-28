@@ -45,13 +45,11 @@ class AzureOauthProvider extends AbstractProvider implements ProviderInterface
 
     public function getUsersByToken($token)
     {
-        Log::info('This is some useful information.');
         $response = $this->getHttpClient()->get('https://graph.microsoft.com/v1.0/users?$top=999', [
             'headers' => [
                 'Authorization' => 'Bearer ' . $token,
             ],
         ]);
-        Log::info('The request completed without exception');
 
         return $response->getBody();
     }
